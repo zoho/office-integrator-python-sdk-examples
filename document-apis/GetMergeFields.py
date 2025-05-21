@@ -1,7 +1,7 @@
 import os
 
 from officeintegrator.src.com.zoho.officeintegrator.exception.sdk_exception import SDKException
-from officeintegrator.src.com.zoho.officeintegrator.dc import APIServer
+from officeintegrator.src.com.zoho.officeintegrator.dc import DataCenter
 from officeintegrator.src.com.zoho.api.authenticator import Auth
 from officeintegrator.src.com.zoho.officeintegrator.util import StreamWrapper
 from officeintegrator.src.com.zoho.officeintegrator.logger import Logger
