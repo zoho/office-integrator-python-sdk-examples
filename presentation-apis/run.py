@@ -7,8 +7,8 @@ def run_all_python_files_in_folder(folder_path):
     # List all files in the given folder
     files = os.listdir(folder_path)
 
-    # Filter out files that have a .py extension
-    python_files = [f for f in files if f.endswith('.py')]
+    # Filter out files that have a .py extension and are not run.py
+    python_files = [f for f in files if f.endswith('.py') and f != 'run.py']
 
     # Run each Python file
     for python_file in python_files:
