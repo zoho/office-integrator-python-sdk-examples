@@ -3,43 +3,42 @@ import os
 from officeintegrator.src.com.zoho.officeintegrator.exception.sdk_exception import SDKException
 from officeintegrator.src.com.zoho.officeintegrator.dc import DataCenter
 from officeintegrator.src.com.zoho.api.authenticator import Auth
-from officeintegrator.src.com.zoho.officeintegrator.util import StreamWrapper
 from officeintegrator.src.com.zoho.officeintegrator.logger import Logger
 from officeintegrator.src.com.zoho.officeintegrator import Initializer
-from officeintegrator.src.com.zoho.officeintegrator.v1 import InvalidConfigurationException, \
-    MergeAndDownloadDocumentParameters, FileBodyWrapper, Authentication
+from officeintegrator.src.com.zoho.officeintegrator.v1 import DocumentConversionParameters, \
+    DocumentConversionOutputOptions, \
+    FileBodyWrapper, InvalidConfigurationException, Authentication, CombinePdfParameters, CombinePdfOutputSettings
 from officeintegrator.src.com.zoho.officeintegrator.v1.v1_operations import V1Operations
+from officeintegrator.src.com.zoho.officeintegrator.util import StreamWrapper
 
-class MergeAndDownload:
+class CombinePdf:
 
-    # Refer Preview API documentation - https://www.zoho.com/officeintegrator/api/v1/merge-document.html
+    # Refer API documentation - https://www.zoho.com/officeintegrator/api/v1/zoho-writer-combine-pdfs.html
     @staticmethod
     def execute():
-        MergeAndDownload.init_sdk()
-        parameter = MergeAndDownloadDocumentParameters()
+        CombinePdf.init_sdk()
+        combinePdfParameters = CombinePdfParameters()
 
-        # Either use url as document source or attach the document in request body use below methods
-        parameter.set_file_url('https://demo.office-integrator.com/zdocs/OfferLetter.zdoc')
+        files = []
         ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
-        # filePath = ROOT_DIR + "/sample_documents/OfferLetter.zdoc"
-        # print('Source document file path : ' + filePath)
-        # parameter.set_file_content(StreamWrapper(file_path=filePath))
+        filePath1 = ROOT_DIR + "/sample_documents/Document1.pdf"
+        print('Source file to be converted : ' + filePath1)
+        files.append(StreamWrapper(file_path=filePath1))
 
-        parameter.set_merge_data_json_url("https://demo.office-integrator.com/data/candidates.json")
-        # jsonFilePath = ROOT_DIR + "/sample_documents/candidates.json"
-        # print('Data Source Json file to be path : ' + jsonFilePath)
-        # parameter.set_merge_data_json_content(StreamWrapper(file_path=jsonFilePath))
+        filePath2 = ROOT_DIR + "/sample_documents/Document2.pdf"
+        print('Source file to be combined : ' + filePath2)
+        files.append(StreamWrapper(file_path=filePath2))
 
-        # parameter.set_merge_data_csv_url("https://demo.office-integrator.com/data/csv_data_source.csv")
-        # filePath = ROOT_DIR + "/sample_documents/csv_data_source.csv"
-        # print('Source document file path : ' + filePath)
-        # parameter.set_merge_data_csv_content(StreamWrapper(file_path=filePath))
+        combinePdfParameters.set_files(files)
 
-        parameter.set_output_format('pdf')
-        parameter.set_password('***')
+        outputOptions = CombinePdfOutputSettings()
+
+        outputOptions.set_name("combine_output.pdf")
+
+        combinePdfParameters.set_output_settings(outputOptions)
 
         v1Operations = V1Operations()
-        response = v1Operations.merge_and_download_document(parameter)
+        response = v1Operations.combine_pdf(combinePdfParameters)
 
         if response is not None:
             print('Status Code: ' + str(response.get_status_code()))
@@ -51,7 +50,7 @@ class MergeAndDownload:
 
                     if isinstance(convertedDocument, StreamWrapper):
                         outputFileStream = convertedDocument.get_stream()
-                        outputFilePath = ROOT_DIR + "/sample_documents/merge_output.pdf"
+                        outputFilePath = ROOT_DIR + "/sample_documents/combine_output.pdf"
 
                         with open(outputFilePath, 'wb') as outputFileObj:
                             # while True:
@@ -66,7 +65,7 @@ class MergeAndDownload:
                             #     outputFileObj.write(chunk)
                             outputFileObj.write(outputFileStream.content)
 
-                        print("\nCheck converted output file in file path - " + outputFilePath)
+                        print("\nCheck combined pdf output file in file path - " + outputFilePath)
                 elif isinstance(responseObject, InvalidConfigurationException):
                     print('Invalid configuration exception.')
                     print('Error Code  : ' + str(responseObject.get_code()))
@@ -93,4 +92,5 @@ class MergeAndDownload:
         except SDKException as ex:
             print(ex.code)
 
-MergeAndDownload.execute()
+
+CombinePdf.execute()

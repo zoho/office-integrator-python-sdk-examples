@@ -1,1 +1,1 @@
-office-integrator-sdk==1.0.0b2
+office-integrator-sdk==1.0.2
